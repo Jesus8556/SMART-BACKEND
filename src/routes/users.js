@@ -1,14 +1,23 @@
 const express = require("express");
 const router = express.Router();
+const bcrypt = require("bcrypt");
 const {Users} = require('../models/empresas')
 //crear parking
-router.post('/users', (req,res) =>{
+router.post('/register', (req,res) =>{
     const user = Users(req.body);
     user
     .save()
     .then((data) => res.json(data))
     .catch((error)=>res.json({message:error}));
 });
+
+router.post('/login', async (req,res) =>{
+    const users = await Users
+    .findOne({usuario : req.body.usuario})
+    const eq = bcrypt.compareSync(req.body.password, users.password );
+    res.json({success: 'Login correcto'})
+})
+
 //obtener parking 
 router.get('/users', (req,res) =>{
     Users

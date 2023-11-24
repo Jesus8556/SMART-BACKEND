@@ -3,7 +3,7 @@ const userSchema = require("../models/empresas");
 const router = express.Router();
 const { Nivel } = require('../models/empresas')
 //crear nivel
-router.post('/nivel', (req, res) => {
+router.post('/nivel',async (req, res) => {
     const user = Nivel(req.body);
     user
         .save()
@@ -11,7 +11,7 @@ router.post('/nivel', (req, res) => {
         .catch((error) => res.json({ message: error }));
 });
 //obtener nivel 
-router.get('/nivel', (req, res) => {
+router.get('/nivel',async (req, res) => {
     Nivel
         .find()
         .populate('empresa', 'nombre')
@@ -20,7 +20,7 @@ router.get('/nivel', (req, res) => {
 
 });
 //obtener 1 nivel 
-router.get('/nivel/:id', (req, res) => {
+router.get('/nivel/:id',async (req, res) => {
     const { id } = req.params;
     Nivel
         .findById(id)
@@ -30,7 +30,7 @@ router.get('/nivel/:id', (req, res) => {
 
 });
 //actualizar 
-router.put('/nivel/:id', (req, res) => {
+router.put('/nivel/:id',async (req, res) => {
     const { id } = req.params;
     const { nivel, empresa } = req.body;
     Nivel
@@ -40,7 +40,7 @@ router.put('/nivel/:id', (req, res) => {
 
 });
 //eliminar
-router.delete('/nivel/:id', (req, res) => {
+router.delete('/nivel/:id',async (req, res) => {
     const { id } = req.params;
     Nivel
         .deleteOne({ _id: id })

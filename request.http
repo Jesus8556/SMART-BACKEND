@@ -66,20 +66,6 @@ DELETE http://localhost:9000/api/nivel/654c2a581e5a7f6a278d117c HTTP/1.1
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ###
 POST http://localhost:9000/api/parking HTTP/1.1
 Content-Type: application/json
@@ -117,14 +103,26 @@ DELETE http://localhost:9000/api/parking/655e5f4a274a71c0ef44c282 HTTP/1.1
 
 
 ###
-POST http://localhost:9000/api/users HTTP/1.1
+POST http://localhost:9000/api/register HTTP/1.1
 Content-Type: application/json
 
 {
-    "usuario": "admin123",
+    "usuario": "admin",
     "password": "12345",
     "empresa ": "65594c9976bb39b7d77c4239"
 }
+
+###
+POST http://localhost:9000/api/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "usuario": "admin",
+    "password": "12345"
+}
+
+
+
 ###
 GET http://localhost:9000/api/users HTTP/1.1
 ###
@@ -134,7 +132,7 @@ PUT http://localhost:9000/api/users/655e6263b7f83260131b3854 HTTP/1.1
 Content-Type: application/json
 
 {
-    "usuario": "admin12345",
+    "usuario": "admin1",
     "password": "12345",
     "empresa ": "65594c9976bb39b7d77c4239"
 }

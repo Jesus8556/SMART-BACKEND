@@ -23,7 +23,7 @@ router.get('/empresa',async (req,res) =>{
     
 });
 //obtener 1 empresa 
-router.get('/empresa/:id', (req,res) =>{
+router.get('/empresa/:id', async (req,res) =>{
     const { id } = req.params;
     Empresa
     .findById(id)
@@ -32,7 +32,7 @@ router.get('/empresa/:id', (req,res) =>{
     
 });
 //actualizar 
-router.put('/empresa/:id', (req,res) =>{
+router.put('/empresa/:id', async (req,res) =>{
     const { id } = req.params;
     const { nombre,email,telefono } = req.body;
     Empresa
@@ -42,7 +42,7 @@ router.put('/empresa/:id', (req,res) =>{
     
 });
 //eliminar
-router.delete('/empresa/:id', (req,res) =>{
+router.delete('/empresa/:id',async (req,res) =>{
     const { id } = req.params;
     Empresa
     .deleteOne({_id:id })
