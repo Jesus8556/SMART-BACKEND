@@ -5,8 +5,10 @@ const cors = require('cors');
 require("dotenv").config();
 const empresaRoutes = require("./routes/empresa");
 const nivelRoutes = require("./routes/nivel");
-const parkingRoutes = require("./routes/parking")
-const usuarioRoutes = require("./routes/users")
+const parkingRoutes = require("./routes/parking");
+const usuarioRoutes = require("./routes/users");
+const adminRoutes = require("./routes/admin");
+
 const app = express();
 const port = process.env.PORT || 9000;
 
@@ -19,7 +21,7 @@ app.use('/api',empresaRoutes);
 app.use('/api',nivelRoutes);
 app.use('/api',parkingRoutes);
 app.use('/api',usuarioRoutes);
-
+app.use('/api',adminRoutes);
 app.get('/', (req,res) =>{
     res.send('Hola mundo Api')
 });
