@@ -51,7 +51,8 @@ const userSchema = mongoose.Schema(
             required: true
         },
         imagen: {
-            type: String
+            type: String,
+            required : true
         }
     }
 
