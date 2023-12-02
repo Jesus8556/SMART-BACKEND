@@ -1,26 +1,47 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const { Users } = require('../models/empresas')
+const { Users,Empresa} = require('../models/empresas')
 const jwt = require('jsonwebtoken')
 //crear parking
-router.post('/register', (req, res) => {
-    const user = Users(req.body);
-    user
+router.post('/register', async (req, res) => {
+    const { usuario, password, empresa } = req.body;
+    const empresaEncontrada = await Empresa.findOne({ nombre: empresa });
+    if (!empresaEncontrada) {
+        return res.status(404).json({ message: 'La empresa no existe' });
+    }
+    const user = new Users({
+        usuario,
+        password,
+        empresa: empresaEncontrada._id,
+    });
+
+    await user
         .save()
         .then((data) => res.json(data))
         .catch((error) => res.json({ message: error }));
 });
 
 router.post('/login', async (req, res) => {
-    const users = await Users
-        .findOne({ usuario: req.body.usuario })
-        .populate('empresa', 'nombre')
-    console.log(users)
-    const eq = bcrypt.compareSync(req.body.password, users.password);
-    res.json({ success: 'Login correcto', token: createToken(users) })
+    try {
+        const users = await Users
+            .findOne({ usuario: req.body.usuario })
+            .populate('empresa', 'nombre');
 
-})
+        if (!users) {
+            return res.status(401).json({ error: 'Usuario no encontrado' }); // 401 Unauthorized
+        }
+
+        const passwordMatch = bcrypt.compareSync(req.body.password, users.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Contraseña incorrecta' }); // 401 Unauthorized
+        }
+
+        res.json({ success: 'Login correcto',empresa: users.empresa});
+    } catch (error) {
+        res.status(500).json({ message: 'Error al procesar la solicitud de inicio de sesión' });
+    }
+});
 
 //obtener parking 
 router.get('/users', (req, res) => {
