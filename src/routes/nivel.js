@@ -2,6 +2,7 @@ const express = require("express");
 const userSchema = require("../models/empresas");
 const router = express.Router();
 const { Nivel, Empresa } = require('../models/empresas')
+
 //crear nivel
 router.post('/nivel',async (req, res) => {
     const user = Nivel(req.body);
@@ -62,9 +63,9 @@ router.get('/nivel/:id',async (req, res) => {
 //actualizar 
 router.put('/nivel/:id',async (req, res) => {
     const { id } = req.params;
-    const { nivel, empresa } = req.body;
+    const { nivel, imagen, empresa } = req.body;
     Nivel
-        .updateOne({ _id: id }, { $set: { nivel, empresa } })
+        .updateOne({ _id: id }, { $set: { nivel, imagen, empresa } })
         .then((data) => res.json(data))
         .catch((error) => res.json({ message: error }));
 

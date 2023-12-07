@@ -105,6 +105,11 @@ const nivelSchema = mongoose.Schema(
             type: String,
             required:true
         },
+        imagen:{
+            type: String,
+            require:true
+
+        },
         empresa:{
             type:mongoose.Schema.Types.ObjectId,
             ref: 'Empresa'

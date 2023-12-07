@@ -33,9 +33,10 @@ POST http://localhost:9000/api/nivel HTTP/1.1
 Content-Type: application/json
 
 {
-    "nivel": "Sector B",
+    "nivel": "Sector A",
+    "imagen":"https://img.freepik.com/foto-gratis/estacionamiento-vacio-estacionamiento-al-aire-libre-parque-publico_1127-3374.jpg",
     
-    "empresa": "6570092dd3c784a78d5d0809"
+    "empresa": "656aa24c9148e74762c78c8a"
 }
 
 ###
