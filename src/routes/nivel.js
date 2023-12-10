@@ -4,13 +4,40 @@ const router = express.Router();
 const { Nivel, Empresa } = require('../models/empresas')
 
 //crear nivel
-router.post('/nivel',async (req, res) => {
-    const user = Nivel(req.body);
-    user
-        .save()
-        .then((data) => res.json(data))
-        .catch((error) => res.json({ message: error }));
+router.post('/nivel', async (req, res) => {
+    try {
+        // Extraer datos del cuerpo de la solicitud
+        const { nivel, empresa, imagen } = req.body;
+
+        // Verificar si se proporcionó el nombre de la empresa
+        if (!empresa) {
+            return res.status(400).json({ message: 'Se requiere el nombre de la empresa en el cuerpo de la solicitud.' });
+        }
+
+        // Buscar la empresa por nombre para obtener su _id
+        const empresaEncontrada = await Empresa.findOne({ nombre: empresa });
+
+        // Verificar si la empresa existe
+        if (!empresaEncontrada) {
+            return res.status(404).json({ message: 'No se encontró la empresa con el nombre proporcionado.' });
+        }
+
+        // Crear un nuevo nivel con el _id de la empresa y la imagen
+        const nuevoNivel = new Nivel({
+            nivel: nivel,
+            empresa: empresaEncontrada._id,
+            imagen: imagen
+        });
+
+        // Guardar el nuevo nivel en la base de datos
+        const nivelGuardado = await nuevoNivel.save();
+
+        res.json(nivelGuardado);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
+
 
 
 
@@ -61,14 +88,41 @@ router.get('/nivel/:id',async (req, res) => {
   
   
 //actualizar 
-router.put('/nivel/:id',async (req, res) => {
-    const { id } = req.params;
-    const { nivel, imagen, empresa } = req.body;
-    Nivel
-        .updateOne({ _id: id }, { $set: { nivel, imagen, empresa } })
-        .then((data) => res.json(data))
-        .catch((error) => res.json({ message: error }));
+router.put('/nivel/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nivel, empresa, imagen } = req.body;
 
+        // Verificar si se proporciona el nombre de la empresa
+        if (empresa) {
+            // Buscar la empresa por nombre para obtener su _id
+            const empresaEncontrada = await Empresa.findOne({ nombre: empresa });
+
+            // Verificar si la empresa existe
+            if (!empresaEncontrada) {
+                return res.status(404).json({ message: 'No se encontró la empresa con el nombre proporcionado.' });
+            }
+
+            // Objeto con los campos a actualizar
+            const updateFields = {
+                nivel: nivel,
+                empresa: empresaEncontrada._id,
+                imagen: imagen // Agregar la actualización de la imagen
+            };
+
+            // Actualizar el nivel con el nuevo nombre, empresa e imagen
+            const nivelActualizado = await Nivel.findByIdAndUpdate(id, updateFields, { new: true });
+
+            return res.json(nivelActualizado);
+        }
+
+        // Si no se proporciona el nombre de la empresa, solo actualizar el nombre del nivel y la imagen
+        const nivelActualizado = await Nivel.findByIdAndUpdate(id, { nivel: nivel, imagen: imagen }, { new: true });
+
+        res.json(nivelActualizado);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 //eliminar
 router.delete('/nivel/:id',async (req, res) => {
