@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {Parking, Nivel} = require('../models/empresas')
+const {Parking, Nivel, Empresa} = require('../models/empresas')
 //crear parking
 router.post('/parking', async (req, res) => {
     try {
@@ -35,20 +35,67 @@ router.post('/parking', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+
 //obtener parking 
 router.get('/parking', async (req, res) => {
     try {
-        const { nivelId } = req.query;
+        const { nivelId, empresaId } = req.query;
 
         // Verificar si se proporcionó el ID de nivel en los parámetros de la consulta
         if (nivelId) {
-            // Filtrar los espacios de estacionamiento por el ID de nivel
-            const data = await Parking.find({ nivel: nivelId }).populate('nivel', 'nivel');
+            // Filtrar los espacios de estacionamiento por el ID de nivel y poblar tanto nivel como empresa
+            const data = await Parking.find({ nivel: nivelId })
+                .populate({
+                    path: 'nivel',
+                    select: 'nivel',
+                    populate: {
+                        path: 'empresa',
+                        select: 'nombre'
+                    }
+                });
             return res.json(data);
         }
 
-        // Si no se proporciona un nivelId, obtener todos los espacios de estacionamiento
-        const data = await Parking.find().populate('nivel', 'nivel');
+        // Verificar si se proporcionó el ID de empresa en los parámetros de la consulta
+        if (empresaId) {
+            // Filtrar los espacios de estacionamiento por el ID de empresa y poblar tanto nivel como empresa
+            const niveles = await Nivel.find({ empresa: empresaId });
+            
+            // Verificar si la empresa existe
+            const empresaExistente = await Empresa.findById(empresaId);
+            if (!empresaExistente) {
+                return res.status(404).json({ message: 'No se encontró la empresa con el ID proporcionado.' });
+            }
+
+            // Filtrar espacios de estacionamiento por los niveles obtenidos
+            const data = await Parking.find({ 'nivel': { $in: niveles.map(n => n._id) } })
+                .populate({
+                    path: 'nivel',
+                    select: 'nivel',
+                    populate: {
+                        path: 'empresa',
+                        select: 'nombre'
+                    }
+                });
+
+            if (data.length === 0) {
+                return res.status(404).json({ message: 'No se encontraron espacios de estacionamiento para la empresa proporcionada.' });
+            }
+
+            return res.json(data);
+        }
+
+        // Si no se proporciona un nivelId ni empresaId, obtener todos los espacios de estacionamiento y poblar tanto nivel como empresa
+        const data = await Parking.find()
+            .populate({
+                path: 'nivel',
+                select: 'nivel',
+                populate: {
+                    path: 'empresa',
+                    select: 'nombre'
+                }
+            });
         return res.json(data);
     } catch (error) {
         res.status(500).json({ message: error.message });

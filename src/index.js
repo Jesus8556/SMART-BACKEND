@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const mqtt = require('mqtt'); 
 
 require("dotenv").config();
 const empresaRoutes = require("./routes/empresa");
@@ -28,46 +27,9 @@ app.get('/', (req,res) =>{
 });
 
 mongoose
-    .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        console.log('Conectado a la base de datos');
+.connect(process.env.MONGODB_URI)
+.then(()=> console.log('Conectado a la base de datos'))
+.catch((error) => console.log(error))
 
-        // Definir el modelo para la colección "parkings"
-        const Parking = mongoose.model('Parkings', new mongoose.Schema({
-            lugar: String,
-            nivel: mongoose.Schema.Types.ObjectId,
-            estado: Boolean
-        }), 'parkings');
-
-        // MQTT
-        const client = mqtt.connect('mqtt://localhost:1883');
-
-        client.on('connect', () => {
-            client.subscribe('test');
-        });
-
-        client.on('message', async (topic, message) => {
-            console.log(`Mensaje: ${message.toString()}`);
-            
-            try {
-                // Extraer el ID de estacionamiento y el estado desde el mensaje
-                const parts = message.toString().split(' ');
-                const parkingId = parts[0];
-                const newState = parts[1] === 'ocupado' ? false : true;
-
-                // Actualizar el estado correspondiente en la base de datos
-                await Parking.findByIdAndUpdate(parkingId, { estado: newState });
-
-                console.log(`Estado actualizado para el estacionamiento ${parkingId}: ${newState}`);
-            } catch (error) {
-                console.error('Error al procesar el mensaje MQTT:', error);
-            }
-        });
-
-        client.on('error', (err) => {
-            console.log(err);
-        });
-    })
-    .catch((error) => console.error(error));
 
 app.listen(port, () => console.log('Servidor escuchando en ',port))

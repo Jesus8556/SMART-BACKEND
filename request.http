@@ -182,3 +182,25 @@ Content-Type: application/json
     "password": "admin1234"
 
 }
+
+
+###
+POST http://54.196.243.240:9000/api/registerAdmin HTTP/1.1
+
+Content-Type: application/json
+
+{
+    "username": "jesus811",
+    "password": "admin1234"
+
+}
+
+###
+POST http://54.196.243.240:9000/api/registerAdmin HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "jesus811",
+    "password": "admin1234"
+
+}
